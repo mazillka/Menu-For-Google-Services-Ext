@@ -86,13 +86,6 @@ const defaultServices = [
 		enabled: true,
 	},
 	{
-		id: "podcasts",
-		name: "Google Podcasts",
-		url: "https://podcasts.google.com/",
-		icon: "../images/google_podcasts.png",
-		enabled: true,
-	},
-	{
 		id: "duo",
 		name: "Google Duo",
 		url: "https://duo.google.com",
