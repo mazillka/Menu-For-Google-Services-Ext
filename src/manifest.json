@@ -1,33 +1,49 @@
 {
-	"manifest_version": 2,
-	"name": "Menu for Google™ Services",
-	"short_name": "Menu for Google™ Services",
-	"version": "4.0.0",
-	"author": "Andrii Shevchuk-Yuhanets",
-	"description": "Easy and fast access to Google™ Services",
-	"icons": {
-		"16": "icons/16x16.png",
-		"32": "icons/32x32.png",
-		"48": "icons/48x48.png",
-		"64": "icons/64x64.png",
-		"128": "icons/128x128.png"
-	},
-	"permissions": ["tabs", "storage", "*://*.google.com/*", "*://*.yuotube.com/*"],
-	"background": {
-		"scripts": ["background.js"],
-		"persistent": false
-	},
-	"content_scripts": [
-		{
-			"all_frames": true,
-			"js": ["contentscript.js"],
-			"matches": ["*://*.google.com/*"],
-			"run_at": "document_start"
-		}
-	],
-	"browser_action": {
-		"default_icon": "icons/48x48.png",
-		"default_popup": "popup.html"
-	},
-	"options_page": "options.html"
+    "manifest_version": 3,
+    "name": "Menu for Google™ Services",
+    "version": "4.0.0",
+    "author": "Andrii Shevchuk-Yuhanets",
+    "description": "Easy and fast access to Google™ Services",
+    "icons": {
+        "16": "icons/16x16.png",
+        "32": "icons/32x32.png",
+        "48": "icons/48x48.png",
+        "64": "icons/64x64.png",
+        "128": "icons/128x128.png"
+    },
+    "permissions": [
+        "tabs",
+        "storage",
+        "identity"
+    ],
+    "host_permissions": [
+        "*://*.google.com/*",
+        "*://*.youtube.com/*",
+        "https://mail.google.com/mail/feed/atom"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "all_frames": true,
+            "js": [
+                "contentscript.js"
+            ],
+            "matches": [
+                "*://*.google.com/*"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "action": {
+        "default_icon": {
+            "16": "icons/16x16.png",
+            "32": "icons/32x32.png",
+            "48": "icons/48x48.png",
+            "128": "icons/128x128.png"
+        },
+        "default_popup": "popup.html"
+    },
+    "options_page": "options.html"
 }

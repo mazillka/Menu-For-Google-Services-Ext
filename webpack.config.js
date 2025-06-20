@@ -6,7 +6,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const ZipBundlerPlugin = require("webpack-zip-bundler");
-const PrettierPlugin = require("prettier-webpack-plugin");
+// const PrettierPlugin = require("prettier-webpack-plugin");
 const CopyVersionPlugin = require("webpack-copy-version-plugin");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 
@@ -22,6 +22,7 @@ module.exports = [
 			filename: "[name].js",
 			path: path.resolve(__dirname, "./dist/"),
 		},
+		devtool: devMode ? "cheap-module-source-map" : false,
 		optimization: {
 			minimizer: [
 				new TerserPlugin({
@@ -121,7 +122,7 @@ module.exports = [
 
 			new ZipBundlerPlugin(),
 
-			new PrettierPlugin(),
+			// new PrettierPlugin(),
 		],
 	},
 ];
