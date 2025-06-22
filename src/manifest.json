@@ -19,7 +19,7 @@
     "host_permissions": [
         "*://*.google.com/*",
         "*://*.youtube.com/*",
-        "https://mail.google.com/mail/feed/atom"
+        "*://mail.google.com/mail/feed/atom"
     ],
     "background": {
         "service_worker": "background.js"
