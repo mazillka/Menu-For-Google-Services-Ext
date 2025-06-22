@@ -1,1 +1,1 @@
-chrome.extension.sendMessage({ message: "update-unread-counter" });
+chrome.runtime.sendMessage({ message: "update-unread-counter" });
