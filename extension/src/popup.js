@@ -1,7 +1,5 @@
-import "../scss/popup.scss";
-import "./helpers/prototypes";
+import "./scss/popup.scss";
 import { createElement, storage } from "./helpers";
-import extensionizer from "extensionizer";
 
 document.addEventListener("DOMContentLoaded", async () => {
 	const style = (await storage.get("menuStyles")).find(style => style.enabled).style;
@@ -15,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 					rel: "noopener",
 					style: `background-image: url(${service.icon});`,
 					class: `${style}-style`,
-					onclick: () => extensionizer.tabs.create({ url: service.url }),
+					onclick: () => chrome.tabs.create({ url: service.url }),
 				};
 
 				const li = createElement("li", attributes, style === "grid" ? "&zwnj;" : service.name);

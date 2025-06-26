@@ -1,5 +1,4 @@
-import "../scss/options.scss";
-import "./helpers/prototypes";
+import "./scss/options.scss";
 import sortable from "sortablejs";
 import { createElement, storage } from "./helpers";
 

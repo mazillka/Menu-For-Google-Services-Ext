@@ -1,8 +1,8 @@
+import { DOMParser } from 'xmldom';
 import { throttle } from "./trottle";
-import extensionizer from "extensionizer";
 
-const isBadgeActive = () => new Promise(resolve => extensionizer.storage.sync.get(["showBadge"], item => resolve(item.showBadge)));
-const setBadgeText = text => extensionizer.browserAction.setBadgeText({ text });
+const isBadgeActive = () => new Promise(resolve => chrome.storage.sync.get(["showBadge"], item => resolve(item.showBadge)));
+const setBadgeText = text => chrome.action.setBadgeText({ text });
 const counter = { number: null };
 
 const localUnreadCounter = new Proxy(counter, {
@@ -21,12 +21,14 @@ const localUnreadCounter = new Proxy(counter, {
 export const refreshBadgeVisibility = visibility => setBadgeText(visibility && localUnreadCounter.number ? localUnreadCounter.number.toString() : "");
 
 export const updateUnreadCounter = throttle(() => {
+	const parser = new DOMParser();
+
 	fetch("https://mail.google.com/mail/feed/atom")
 		.then(response => response.text())
-		.then(xmlString => new window.DOMParser().parseFromString(xmlString, "text/xml"))
+		.then(xmlString => parser.parseFromString(xmlString, "text/xml"))
 		.then(xmlDoc => {
 			if (xmlDoc) {
-				const tag = xmlDoc.querySelector("fullcount");
+				const tag = xmlDoc.getElementsByTagNameNS("http://purl.org/atom/ns#", "fullcount")[0];
 				if (tag) {
 					const unreadNumber = Number(tag.textContent);
 
