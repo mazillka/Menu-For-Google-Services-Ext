@@ -15,10 +15,10 @@ module.exports = (env, argv) => {
 		{
 			mode: devMode ? "development" : "production",
 			entry: {
-				contentscript: "./src/contentscript.js",
-				background: "./src/background.js",
-				popup: "./src/popup.js",
-				options: "./src/options.js",
+				contentscript: "./src/contentscript.ts",
+				background: "./src/background.ts",
+				popup: "./src/popup.ts",
+				options: "./src/options.ts",
 			},
 			output: {
 				filename: "[name].js",
@@ -87,6 +87,11 @@ module.exports = (env, argv) => {
 							filename: "static/images/[name][ext]",
 						},
 					},
+					{
+						test: /\.ts$/,
+						use: "ts-loader",
+						exclude: /node_modules/,
+					},
 				],
 			},
 			plugins: [
@@ -121,7 +126,7 @@ module.exports = (env, argv) => {
 				}),
 			],
 			resolve: {
-				extensions: [".js", ".json"],
+				extensions: [".ts", ".js", ".json"],
 			},
 		},
 	];

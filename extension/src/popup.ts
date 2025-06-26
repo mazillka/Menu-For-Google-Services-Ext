@@ -1,11 +1,12 @@
 import "./scss/popup.scss";
 import { createElement, storage } from "./helpers";
+import { Service } from "./types";
 
 document.addEventListener("DOMContentLoaded", async () => {
-	const style = (await storage.get("menuStyles")).find(style => style.enabled).style;
-	const ul = document.querySelector("#list");
+	const style = (await storage.get(storage.StorageKeys.menuStyles)).find((style: { enabled: boolean; }) => style.enabled).style;
+	const ul = document.querySelector("#list") as HTMLElement;
 
-	await storage.get("services").then(services => {
+	await storage.get(storage.StorageKeys.services).then((services: Service[]) => {
 		services
 			.filter(service => service.enabled)
 			.forEach(service => {
@@ -16,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 					onclick: () => chrome.tabs.create({ url: service.url }),
 				};
 
-				const li = createElement("li", attributes, style === "grid" ? "&zwnj;" : service.name);
+				const li: any = createElement("li", attributes, style === "grid" ? "&zwnj;" : service.name);
 
 				ul.appendChild(li);
 			});
