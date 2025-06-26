@@ -1,7 +1,6 @@
 import { initializeData, updateData } from "./helpers/initialize-storage-data";
 import { refreshBadgeVisibility, storage, updateUnreadCounter } from "./helpers";
 
-// set up listeners
 storage.onChange(changes => {
 	if (changes.hasOwnProperty("showBadge")) {
 		refreshBadgeVisibility(changes.showBadge.newValue);

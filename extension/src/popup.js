@@ -1,4 +1,4 @@
-import "../scss/popup.scss";
+import "./scss/popup.scss";
 import { createElement, storage } from "./helpers";
 
 document.addEventListener("DOMContentLoaded", async () => {

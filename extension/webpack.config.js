@@ -15,10 +15,10 @@ module.exports = (env, argv) => {
 		{
 			mode: devMode ? "development" : "production",
 			entry: {
-				contentscript: "./src/js/contentscript.js",
-				background: "./src/js/background.js",
-				popup: "./src/js/popup.js",
-				options: "./src/js/options.js",
+				contentscript: "./src/contentscript.js",
+				background: "./src/background.js",
+				popup: "./src/popup.js",
+				options: "./src/options.js",
 			},
 			output: {
 				filename: "[name].js",
@@ -84,7 +84,7 @@ module.exports = (env, argv) => {
 						test: /\.(png|jpe?g|gif|svg|ico)$/i,
 						type: "asset/resource",
 						generator: {
-							filename: "images/[name][ext]",
+							filename: "static/images/[name][ext]",
 						},
 					},
 				],
@@ -93,22 +93,22 @@ module.exports = (env, argv) => {
 				new CleanWebpackPlugin(),
 				new CopyVersionPlugin({
 					from: "./package.json",
-					to: "./src/manifest.json",
+					to: "./manifest.json",
 				}),
 				new CopyWebpackPlugin({
 					patterns: [
-						{ from: "./src/icons", to: "icons" },
-						{ from: "./src/images", to: "images" },
-						{ from: "./src/manifest.json", to: "manifest.json" },
+						{ from: "./static/icons", to: "icons" },
+						{ from: "./static/images", to: "images" },
+						{ from: "./manifest.json", to: "manifest.json" },
 					],
 				}),
 				new HtmlWebPackPlugin({
-					template: "./src/html/options.html",
+					template: "./static/html/options.html",
 					filename: "./options.html",
 					excludeChunks: ["background", "contentscript", "popup"],
 				}),
 				new HtmlWebPackPlugin({
-					template: "./src/html/popup.html",
+					template: "./static/html/popup.html",
 					filename: "./popup.html",
 					excludeChunks: ["background", "contentscript", "options"],
 				}),

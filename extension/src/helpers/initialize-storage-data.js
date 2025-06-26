@@ -79,20 +79,6 @@ const defaultServices = [
 		enabled: true,
 	},
 	{
-		id: "music",
-		name: "Google Play Music",
-		url: "https://music.google.com",
-		icon: "../images/google_play_music.png",
-		enabled: true,
-	},
-	{
-		id: "duo",
-		name: "Google Duo",
-		url: "https://duo.google.com",
-		icon: "../images/google_duo.png",
-		enabled: true,
-	},
-	{
 		id: "meet",
 		name: "Google Meet",
 		url: "https://meet.google.com",
