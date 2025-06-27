@@ -1,19 +1,21 @@
-const path = require("path");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
-const HtmlWebPackPlugin = require("html-webpack-plugin");
-const CopyVersionPlugin = require("webpack-copy-version-plugin");
-const ZipPlugin = require('zip-webpack-plugin');
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+import path from "path";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import CopyWebpackPlugin from "copy-webpack-plugin";
+import TerserPlugin from "terser-webpack-plugin";
+import HtmlWebPackPlugin from "html-webpack-plugin";
+import CopyVersionPlugin from "webpack-copy-version-plugin";
+import ZipPlugin from "zip-webpack-plugin";
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
+import precss from "precss";
+import autoprefixer from "autoprefixer";
 
-module.exports = (env, argv) => {
+export default (env, argv) => {
 	const devMode = argv.mode !== "production";
 
 	return [
 		{
-			mode: devMode ? "development" : "production",
+			mode: argv.mode || "development",
 			entry: {
 				contentscript: "./src/contentscript.ts",
 				background: "./src/background.ts",
@@ -22,13 +24,13 @@ module.exports = (env, argv) => {
 			},
 			output: {
 				filename: "[name].js",
-				path: path.resolve(__dirname, "./dist/"),
+				path: path.resolve("./dist/"),
 				clean: true,
 				trustedTypes: "default"
 			},
 			devtool: devMode ? "source-map" : false,
 			optimization: {
-				minimize: devMode ? false : true,
+				minimize: !devMode,
 				minimizer: [
 					new TerserPlugin({
 						terserOptions: {
@@ -58,7 +60,7 @@ module.exports = (env, argv) => {
 							{
 								loader: "html-loader",
 								options: {
-									minimize: devMode ? false : true,
+									minimize: !devMode,
 								},
 							},
 						],
@@ -72,14 +74,13 @@ module.exports = (env, argv) => {
 								loader: "postcss-loader",
 								options: {
 									postcssOptions: {
-										plugins: [require("precss"), require("autoprefixer")],
+										plugins: [precss, autoprefixer],
 									},
 								},
 							},
 							"sass-loader",
 						],
 					},
-					// Example for asset modules (images/fonts)
 					{
 						test: /\.(png|jpe?g|gif|svg|ico)$/i,
 						type: "asset/resource",

@@ -21,7 +21,7 @@ async function renderServicesList() {
 			id: service.id,
 			...(service.enabled && { checked: true }),
 		});
-		const label: any = createElement("label", { htmlFor: service.id }, ` ${service.name}`);
+		const label: any = createElement("label", { for: service.id }, ` ${service.name}`);
 		const p: any = createElement("p", {}, [input, label]);
 		const li: any = createElement("li", { style: `background-image: url(${service.icon});` }, p);
 
@@ -81,7 +81,7 @@ async function renderStyleList() {
 			id: style.name,
 			...(style.enabled && { checked: true }),
 		});
-		const label: any = createElement("label", { htmlFor: style.name }, ` ${style.name}`);
+		const label: any = createElement("label", { for: style.name }, ` ${style.name}`);
 		const p: any = createElement("p", {}, [input, label]);
 		input.addEventListener("click", async (event: { target: HTMLInputElement; }) => {
 			const storageStyles: MenuStyle[] = await storage.get(constants.Storage.MenuStyles);
@@ -138,4 +138,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 	initializeTabs();
 });
 
-document.addEventListener("contextmenu", event => event.preventDefault());
+if (process.env.NODE_ENV !== "development") {
+    document.addEventListener("contextmenu", event => event.preventDefault());
+}

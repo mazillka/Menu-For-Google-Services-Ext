@@ -24,4 +24,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 	});
 });
 
-document.addEventListener("contextmenu", event => event.preventDefault());
+if (process.env.NODE_ENV !== "development") {
+	document.addEventListener("contextmenu", event => event.preventDefault());
+}
