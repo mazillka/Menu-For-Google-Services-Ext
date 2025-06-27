@@ -1,8 +1,8 @@
-import { storage, throttle } from ".";
+import { storage, throttle, constants } from ".";
 import { XMLParser } from "fast-xml-parser";
 
 const isBadgeActive = async (): Promise<boolean> => {
-	const item = await storage.get(storage.StorageKeys.showBadge);
+	const item = await storage.get(constants.Storage.ShowBadge);
 	return !!item.showBadge;
 };
 
@@ -31,7 +31,7 @@ export const refreshBadgeVisibility = (visibility: boolean) =>
 	setBadgeText(visibility && localUnreadCounter.number ? localUnreadCounter.number.toString() : "");
 
 export const updateUnreadCounter = throttle(() => {
-	fetch("https://mail.google.com/mail/feed/atom")
+	fetch(constants.Url.MailCount)
 		.then(response => response.text())
 		.then(xmlString => new XMLParser().parse(xmlString))
 		.then(xmlData => {

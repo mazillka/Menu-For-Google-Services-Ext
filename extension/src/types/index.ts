@@ -1,4 +1,4 @@
-import Service from "./service";
-import Style from "./style";
+import GoogleService from "./googleService";
+import MenuStyle from "./menuStyle";
 
-export { Service, Style }
+export { GoogleService, MenuStyle }

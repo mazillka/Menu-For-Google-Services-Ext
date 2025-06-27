@@ -1,13 +1,13 @@
-import { refreshBadgeVisibility, storage, updateUnreadCounter, initializeData, updateData } from "./helpers";
+import { refreshBadgeVisibility, storage, updateUnreadCounter, initializeData, updateData, constants } from "./helpers";
 
 storage.onChange(changes => {
-	if (changes.hasOwnProperty(storage.StorageKeys.showBadge)) {
-		refreshBadgeVisibility(changes.showBadge.newValue);
+	if (changes.hasOwnProperty(constants.Storage.ShowBadge)) {
+		refreshBadgeVisibility(changes[constants.Storage.ShowBadge].newValue);
 	}
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	if (request.message === "update-unread-counter") {
+	if (request.message === constants.Message.UpdateUnreadCounter) {
 		updateUnreadCounter();
 	}
 });

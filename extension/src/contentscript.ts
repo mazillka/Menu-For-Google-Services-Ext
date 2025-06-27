@@ -1,1 +1,3 @@
-chrome.runtime.sendMessage({ message: "update-unread-counter" });
+import { constants } from "./helpers";
+
+chrome.runtime.sendMessage({ message: constants.Message.UpdateUnreadCounter });

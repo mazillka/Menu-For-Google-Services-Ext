@@ -1,7 +1,7 @@
 import "./scss/options.scss";
 import sortable from "sortablejs";
-import { createElement, storage } from "./helpers";
-import { Service, Style } from "./types";
+import { createElement, storage, constants } from "./helpers";
+import { GoogleService, MenuStyle } from "./types";
 
 async function renderServicesList() {
 	const ul = document.querySelector("#list") as HTMLElement;
@@ -13,7 +13,7 @@ async function renderServicesList() {
 		ul.removeChild(ul.firstChild);
 	}
 
-	const services: Service[] = await storage.get(storage.StorageKeys.services);
+	const services: GoogleService[] = await storage.get(constants.Storage.Services);
 	services.forEach(service => {
 		const input: any = createElement("input", {
 			type: "checkbox",
@@ -35,11 +35,11 @@ async function renderServicesList() {
 			if (typeof oldIndex !== "number" || typeof newIndex !== "number") {
 				return;
 			}
-			const services: Service[] = await storage.get(storage.StorageKeys.services);
+			const services: GoogleService[] = await storage.get(constants.Storage.Services);
 			const movedElement = services[oldIndex];
 			services.splice(oldIndex, 1);
 			services.splice(newIndex, 0, movedElement);
-			await storage.set(storage.StorageKeys.services, services);
+			await storage.set(constants.Storage.Services, services);
 		},
 	});
 
@@ -52,9 +52,9 @@ function addServiceCheckboxesEventListeners() {
 			input.addEventListener("click", async event => {
 				const element = event.target as HTMLInputElement;
 				if (element.value === "unread-counter") {
-					storage.set(storage.StorageKeys.showBadge, element.checked);
+					storage.set(constants.Storage.ShowBadge, element.checked);
 				} else {
-					const services: Service[] = await storage.get(storage.StorageKeys.services);
+					const services: GoogleService[] = await storage.get(constants.Storage.Services);
 					const changedServices = services
 						.map(service => {
 							if (service.id === element.value) {
@@ -64,7 +64,7 @@ function addServiceCheckboxesEventListeners() {
 						})
 						.sort((x, y) => (x.enabled === y.enabled ? 0 : x.enabled ? -1 : 1));
 
-					await storage.set(storage.StorageKeys.services, changedServices);
+					await storage.set(constants.Storage.Services, changedServices);
 					await renderServicesList();
 				}
 			});
@@ -72,7 +72,7 @@ function addServiceCheckboxesEventListeners() {
 }
 
 async function renderStyleList() {
-	const menuStyles: Style[] = await storage.get(storage.StorageKeys.menuStyles);
+	const menuStyles: MenuStyle[] = await storage.get(constants.Storage.MenuStyles);
 	menuStyles.forEach(style => {
 		const input: any = createElement("input", {
 			type: "radio",
@@ -84,12 +84,12 @@ async function renderStyleList() {
 		const label: any = createElement("label", { htmlFor: style.name }, ` ${style.name}`);
 		const p: any = createElement("p", {}, [input, label]);
 		input.addEventListener("click", async (event: { target: HTMLInputElement; }) => {
-			const storageStyles: Style[] = await storage.get(storage.StorageKeys.menuStyles);
-			const changedStyles = storageStyles.map((style: Style) => {
+			const storageStyles: MenuStyle[] = await storage.get(constants.Storage.MenuStyles);
+			const changedStyles = storageStyles.map((style: MenuStyle) => {
 				style.enabled = style.name === (event.target as HTMLInputElement).value;
 				return style;
 			});
-			await storage.set(storage.StorageKeys.menuStyles, changedStyles);
+			await storage.set(constants.Storage.MenuStyles, changedStyles);
 		});
 
 		const styles = document.querySelector("#style-list");
@@ -102,7 +102,7 @@ async function renderStyleList() {
 async function initializeUnreadCountCheckbox() {
 	const checkbox = document.querySelector<HTMLInputElement>("#show-unread-count-checkbox");
 	if (checkbox != null) {
-		checkbox.checked = await storage.get(storage.StorageKeys.showBadge);
+		checkbox.checked = await storage.get(constants.Storage.ShowBadge);
 	}
 }
 

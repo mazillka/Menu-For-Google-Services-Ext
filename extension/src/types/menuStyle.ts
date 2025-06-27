@@ -1,4 +1,4 @@
-export default class Style {
+export default class MenuStyle {
     public name: string;
     public style: string;
     public enabled: boolean;

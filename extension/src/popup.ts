@@ -1,12 +1,12 @@
 import "./scss/popup.scss";
-import { createElement, storage } from "./helpers";
-import { Service } from "./types";
+import { createElement, storage, constants } from "./helpers";
+import { GoogleService } from "./types";
 
 document.addEventListener("DOMContentLoaded", async () => {
-	const style = (await storage.get(storage.StorageKeys.menuStyles)).find((style: { enabled: boolean; }) => style.enabled).style;
+	const style = (await storage.get(constants.Storage.MenuStyles)).find((style: { enabled: boolean; }) => style.enabled).style;
 	const ul = document.querySelector("#list") as HTMLElement;
 
-	await storage.get(storage.StorageKeys.services).then((services: Service[]) => {
+	await storage.get(constants.Storage.Services).then((services: GoogleService[]) => {
 		services
 			.filter(service => service.enabled)
 			.forEach(service => {

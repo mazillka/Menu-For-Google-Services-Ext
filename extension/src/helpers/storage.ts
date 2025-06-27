@@ -19,17 +19,10 @@ export const onChange = (
 		namespace === "sync" ? cb(changes) : undefined
 	);
 
-export const StorageKeys = {
-	services: "services",
-	menuStyles: "menuStyles",
-	showBadge: "showBadge",
-};
-
 export default {
 	get,
 	set,
 	remove,
 	clear,
-	onChange,
-	StorageKeys,
+	onChange
 };
