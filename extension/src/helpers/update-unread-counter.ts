@@ -1,10 +1,7 @@
 import { storage, throttle, constants } from ".";
 import { XMLParser } from "fast-xml-parser";
 
-const isBadgeActive = async (): Promise<boolean> => {
-	const item = await storage.get(constants.Storage.ShowBadge);
-	return !!item.showBadge;
-};
+const isBadgeActive = async (): Promise<boolean> => await storage.get(constants.Storage.ShowBadge);
 
 const setBadgeText = (text: string) => chrome.action.setBadgeText({ text });
 
@@ -35,10 +32,15 @@ export const updateUnreadCounter = throttle(() => {
 		.then(response => response.text())
 		.then(xmlString => new XMLParser().parse(xmlString))
 		.then(xmlData => {
+			if (!xmlData || !xmlData.feed || !xmlData.feed.fullcount) {
+				throw new Error("Invalid XML structure or missing fullcount");
+			}
 			const unreadNumber = Number(xmlData.feed.fullcount);
-
 			if (!Number.isNaN(unreadNumber) && unreadNumber !== localUnreadCounter.number) {
 				localUnreadCounter.number = unreadNumber;
 			}
+		})
+		.catch(error => {
+			console.error(`Error updating unread counter: ${error}`);
 		});
 }, 1000);
