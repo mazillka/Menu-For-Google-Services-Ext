@@ -1,6 +1,6 @@
 import "./scss/options.scss";
 import sortable from "sortablejs";
-import { createElement, storage, constants } from "./helpers";
+import { createElement, storage, constants, handleContextMenu } from "./helpers";
 import { GoogleService, MenuStyle } from "./types";
 
 async function renderServicesList() {
@@ -43,16 +43,16 @@ async function renderServicesList() {
 		},
 	});
 
-	addServiceCheckboxesEventListeners();
+	await addServiceCheckboxesEventListeners();
 }
 
-function addServiceCheckboxesEventListeners() {
+async function addServiceCheckboxesEventListeners() {
 	document.querySelectorAll<HTMLInputElement>(`input[type="checkbox"]`)
 		.forEach(input => {
 			input.addEventListener("click", async event => {
 				const element = event.target as HTMLInputElement;
 				if (element.value === "unread-counter") {
-					storage.set(constants.Storage.ShowBadge, element.checked);
+					await storage.set(constants.Storage.ShowBadge, element.checked);
 				} else {
 					const services: GoogleService[] = await storage.get(constants.Storage.Services);
 					const changedServices = services
@@ -80,17 +80,17 @@ async function renderStyleList() {
 			value: style.name,
 			id: style.name,
 			...(style.enabled && { checked: true }),
+			onclick: async (event: { target: HTMLInputElement; }) => {
+				const storageStyles: MenuStyle[] = await storage.get(constants.Storage.MenuStyles);
+				const changedStyles = storageStyles.map((style: MenuStyle) => {
+					style.enabled = style.name === (event.target as HTMLInputElement).value;
+					return style;
+				});
+				await storage.set(constants.Storage.MenuStyles, changedStyles);
+			}
 		});
 		const label: any = createElement("label", { for: style.name }, ` ${style.name}`);
 		const p: any = createElement("p", {}, [input, label]);
-		input.addEventListener("click", async (event: { target: HTMLInputElement; }) => {
-			const storageStyles: MenuStyle[] = await storage.get(constants.Storage.MenuStyles);
-			const changedStyles = storageStyles.map((style: MenuStyle) => {
-				style.enabled = style.name === (event.target as HTMLInputElement).value;
-				return style;
-			});
-			await storage.set(constants.Storage.MenuStyles, changedStyles);
-		});
 
 		const styles = document.querySelector("#style-list");
 		if (styles != null) {
@@ -106,7 +106,7 @@ async function initializeUnreadCountCheckbox() {
 	}
 }
 
-function initializeTabs() {
+async function initializeTabs() {
 	const tabLinks = document.querySelectorAll<HTMLElement>(".tab-links");
 	tabLinks.forEach(element => {
 		element.addEventListener("click", event => openTab(event, (event.target as HTMLInputElement).value));
@@ -135,9 +135,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	await renderServicesList();
 	await renderStyleList();
 	await initializeUnreadCountCheckbox();
-	initializeTabs();
-});
+	await initializeTabs();
 
-if (process.env.NODE_ENV !== "development") {
-    document.addEventListener("contextmenu", event => event.preventDefault());
-}
+	await handleContextMenu();
+});

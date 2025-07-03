@@ -1,5 +1,5 @@
 import "./scss/popup.scss";
-import { createElement, storage, constants } from "./helpers";
+import { createElement, storage, constants, handleContextMenu } from "./helpers";
 import { GoogleService } from "./types";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -10,20 +10,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 		services
 			.filter(service => service.enabled)
 			.forEach(service => {
-				const attributes = {
+				const li: any = createElement("li", {
 					rel: "noopener",
 					style: `background-image: url(${service.icon});`,
 					class: `${style}-style`,
 					onclick: () => chrome.tabs.create({ url: service.url }),
-				};
-
-				const li: any = createElement("li", attributes, style === "grid" ? "&zwnj;" : service.name);
+				}, style === "grid" ? "&zwnj;" : service.name);
 
 				ul.appendChild(li);
 			});
 	});
-});
 
-if (process.env.NODE_ENV !== "development") {
-	document.addEventListener("contextmenu", event => event.preventDefault());
-}
+	await handleContextMenu();
+});

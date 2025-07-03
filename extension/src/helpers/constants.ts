@@ -9,6 +9,9 @@ export const constants = {
     },
     Message: {
         UpdateUnreadCounter: "update-unread-counter",
+    },
+    Alarm: {
+        UpdateUnreadCounter: "update-unread-counter",
     }
 }
 

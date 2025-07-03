@@ -1,3 +1,3 @@
 import { constants } from "./helpers";
 
-chrome.runtime.sendMessage({ message: constants.Message.UpdateUnreadCounter });
+await chrome.runtime.sendMessage({ message: constants.Message.UpdateUnreadCounter });

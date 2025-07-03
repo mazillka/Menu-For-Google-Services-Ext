@@ -1,18 +1,18 @@
-export const get = async (key: any): Promise<any> =>
+const get = async (key: any): Promise<any> =>
 	new Promise(resolve => {
 		chrome.storage.sync.get([key], item => resolve(item[key] || null));
 	});
 
-export const set = async (key: any, value: any): Promise<void> =>
-	chrome.storage.sync.set({ [key]: value });
+const set = async (key: any, value: any): Promise<void> =>
+	await chrome.storage.sync.set({ [key]: value });
 
-export const remove = async (key: string | number | (string | number)[]): Promise<void> =>
-	chrome.storage.sync.remove(key);
+const remove = async (key: string | number | (string | number)[]): Promise<void> =>
+	await chrome.storage.sync.remove(key);
 
-export const clear = async (): Promise<void> =>
-	chrome.storage.sync.clear();
+const clear = async (): Promise<void> =>
+	await chrome.storage.sync.clear();
 
-export const onChange = (
+const onChange = (
 	cb: (arg0: { [key: string]: chrome.storage.StorageChange }) => void
 ): void =>
 	chrome.storage.onChanged.addListener((changes, namespace) =>
