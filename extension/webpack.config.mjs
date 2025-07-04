@@ -104,7 +104,6 @@ export default (env, argv) => {
 				new CopyWebpackPlugin({
 					patterns: [
 						{ from: "./static/icons", to: "icons" },
-						{ from: "./static/images", to: "images" },
 						{ from: "./manifest.json", to: "manifest.json" },
 					],
 				}),
