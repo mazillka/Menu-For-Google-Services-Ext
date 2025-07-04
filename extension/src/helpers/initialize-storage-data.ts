@@ -19,6 +19,7 @@ const defaultServices: GoogleService[] = [
 	new GoogleService("store", "Chrome Web Store", "https://chrome.google.com/webstore", "../icons/svg/icons8-chrome-web-store.svg"),
 	new GoogleService("chat", "Google Chat", "https://mail.google.com/chat", "../icons/svg/icons8-google-chat.svg"),
 	new GoogleService("gemini", "Google Gemini", "https://gemini.google.com/", "../icons/svg/icons8-gemini.svg"),
+	new GoogleService("tasks", "Google Tasks", "https://tasks.google.com/", "../icons/svg/tasks.svg"),
 ];
 
 const defaultMenuStyles: MenuStyle[] = [
