@@ -1,4 +1,4 @@
-@import "tabs.scss";
+@use "tabs.scss";
 
 * {
 	margin: 0;
@@ -55,6 +55,14 @@
 
 		.cursor-pointer {
 			cursor: pointer;
+		}
+
+		.text-small{
+			font-size: small;
+		}
+
+		.text-gray{
+			color: gray;
 		}
 	}
 }
