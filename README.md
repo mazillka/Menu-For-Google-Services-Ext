@@ -1,4 +1,4 @@
-# GoogleServicesExt
+# Menu-For-Google-Services-Ext
 
 GoogleServicesExt is a browser extension that provides a convenient, customizable menu for quick access to popular Google services such as Gmail, Drive, Calendar, and more. 
 With this extension, users can easily navigate between Google products from a single menu, improving productivity and workflow efficiency.
