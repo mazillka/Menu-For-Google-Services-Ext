@@ -1,3 +1,5 @@
+@use "shared.scss";
+
 * {
 	margin: 0;
 	padding: 0;
@@ -19,7 +21,7 @@
 			cursor: pointer;
 
 			&:hover,
-			&:hover > label {
+			&:hover>label {
 				background-color: #39f;
 			}
 		}
@@ -46,7 +48,7 @@
 		height: 35px;
 
 		&:hover,
-		&:hover > label {
+		&:hover>label {
 			background-color: transparent;
 			font-size: 14px;
 			color: black;

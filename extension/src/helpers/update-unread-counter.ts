@@ -1,4 +1,4 @@
-import { storage, constants } from ".";
+import { storageService, constants } from ".";
 import { XMLParser } from "fast-xml-parser";
 
 const setBadgeText = async (text: string) => await chrome.action.setBadgeText({ text });
@@ -9,7 +9,7 @@ const localUnreadCounter = new Proxy(counter, {
 	set(target: any, objectKey: string, value: any) {
 		target[objectKey] = value;
 		if (objectKey === "number" && !Number.isNaN(value)) {
-			storage.get(constants.Storage.ShowBadge).then(async (active: boolean) => {
+			storageService.getShowBadge().then(async (active: boolean) => {
 				if (active) {
 					await setBadgeText(value > 0 ? value.toString() : "");
 				}
@@ -40,4 +40,7 @@ const updateUnreadCounter = async () => {
 		});
 };
 
-export { updateUnreadCounter, refreshBadgeVisibility }
+export {
+	updateUnreadCounter,
+	refreshBadgeVisibility
+}

@@ -1,4 +1,4 @@
-import { storage, constants } from ".";
+import { storageService } from ".";
 import { GoogleService, MenuStyle } from "../types";
 
 const defaultServices: GoogleService[] = [
@@ -22,54 +22,45 @@ const defaultServices: GoogleService[] = [
 	new GoogleService("tasks", "Google Tasks", "https://tasks.google.com/", "../icons/svg/tasks.svg"),
 ];
 
-const defaultMenuStyles: MenuStyle[] = [
-	new MenuStyle("Grid Menu", "grid", true),
-	new MenuStyle("Line Menu", "line", false)
-];
+const defaultMenuStyles: MenuStyle[] = [new MenuStyle("Grid Menu", "grid", true), new MenuStyle("Line Menu", "line", false)];
 
-const initializeServicesState = async () => await storage.set(constants.Storage.Services, defaultServices);
+const defaultShowBadge = true;
 
-const initializeMenuStylesState = async () => await storage.set(constants.Storage.MenuStyles, defaultMenuStyles);
+const initializeData = async () => {
+	const [services, menuStyles, showBadge] = await Promise.all([storageService.getServices(), storageService.getMenuStyles(), storageService.getShowBadge()]);
 
-const initializeBadgeVisibilityState = async () => await storage.set(constants.Storage.ShowBadge, true);
+	if (!services || services.length === 0) {
+		await storageService.setServices(defaultServices);
+	}
 
-const updateServicesState = async () => {
-	return await storage.get(constants.Storage.Services).then(async (services: GoogleService[]) => {
+	if (!menuStyles || menuStyles.length === 0) {
+		await storageService.setMenuStyles(defaultMenuStyles);
+	}
+
+	if (typeof showBadge !== "boolean") {
+		await storageService.setShowBadge(defaultShowBadge);
+	}
+};
+
+const updateData = async () => {
+	return await storageService.getServices().then(async (services: GoogleService[]) => {
+		// Add or update default services
 		defaultServices.forEach(defaultService => {
-			const service = services.find(service => defaultService.id === service.id);
-			if (service) {
-				service.name = defaultService.name;
-				service.url = defaultService.url;
-				service.icon = defaultService.icon;
+			const existing = services.find(service => defaultService.id === service.id);
+			if (existing) {
+				existing.name = defaultService.name;
+				existing.url = defaultService.url;
+				existing.icon = defaultService.icon;
 			} else {
 				services.push(defaultService);
 			}
 		});
 
-		services.forEach(service => {
-			if (!defaultServices.some(defaultService => defaultService.id === service.id)) {
-				services = services.filter(s => s.id !== service.id);
-			}
-		});
+		// Remove non-custom services and services that are not in defaults
+		services = services.filter(service => service.custom || defaultServices.some(def => def.id === service.id));
 
-		await storage.set(constants.Storage.Services, services);
+		await storageService.setServices(services);
 	});
 };
 
-const initializeData = async () => {
-	if (!(await storage.get(constants.Storage.Services))) {
-		await initializeServicesState();
-	}
-
-	if (!(await storage.get(constants.Storage.MenuStyles))) {
-		await initializeMenuStylesState();
-	}
-
-	if (!(await storage.get(constants.Storage.ShowBadge))) {
-		await initializeBadgeVisibilityState();
-	}
-};
-
-const updateData = async () => await updateServicesState();
-
-export { initializeData, updateData }
+export { initializeData, updateData };

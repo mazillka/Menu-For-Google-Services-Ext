@@ -1,4 +1,5 @@
 @use "tabs.scss";
+@use "shared.scss";
 
 * {
 	margin: 0;
@@ -57,11 +58,11 @@
 			cursor: pointer;
 		}
 
-		.text-small{
+		.text-small {
 			font-size: small;
 		}
 
-		.text-gray{
+		.text-gray {
 			color: gray;
 		}
 	}

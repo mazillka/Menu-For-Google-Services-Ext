@@ -1,9 +1,9 @@
 import "./scss/options.scss";
 import sortable from "sortablejs";
-import { createElement, storage, constants, handleContextMenu } from "./helpers";
-import { GoogleService, MenuStyle } from "./types";
+import { createElement, storageService, handleContextMenu } from "./helpers";
+import { GoogleService } from "./types";
 
-async function renderServicesList() {
+const renderServicesList = async () => {
 	const ul = document.querySelector("#list") as HTMLElement;
 	if (!ul) {
 		return;
@@ -13,17 +13,16 @@ async function renderServicesList() {
 		ul.removeChild(ul.firstChild);
 	}
 
-	const services: GoogleService[] = await storage.get(constants.Storage.Services);
-	services.forEach(service => {
-		const input: any = createElement("input", {
+	(await storageService.getServices()).forEach(service => {
+		const input = createElement("input", {
 			type: "checkbox",
 			value: service.id,
 			id: service.id,
 			...(service.enabled && { checked: true }),
-		});
-		const label: any = createElement("label", { for: service.id }, ` ${service.name}`);
-		const p: any = createElement("p", {}, [input, label]);
-		const li: any = createElement("li", { style: `background-image: url(${service.icon});` }, p);
+		}) as HTMLInputElement;
+		const label = createElement("label", { for: service.id }, ` ${service.name}`) as HTMLLabelElement;
+		const p = createElement("p", {}, [input, label]) as HTMLParagraphElement;
+		const li: any = createElement("li", { style: `background-image: url(${service.icon});` }, p) as HTMLLIElement;
 
 		ul.appendChild(li);
 	});
@@ -35,78 +34,78 @@ async function renderServicesList() {
 			if (typeof oldIndex !== "number" || typeof newIndex !== "number") {
 				return;
 			}
-			const services: GoogleService[] = await storage.get(constants.Storage.Services);
+			const services = await storageService.getServices();
 			const movedElement = services[oldIndex];
 			services.splice(oldIndex, 1);
 			services.splice(newIndex, 0, movedElement);
-			await storage.set(constants.Storage.Services, services);
+			await storageService.setServices(services);
 		},
 	});
 
 	await addServiceCheckboxesEventListeners();
-}
+};
 
-async function addServiceCheckboxesEventListeners() {
-	document.querySelectorAll<HTMLInputElement>(`input[type="checkbox"]`)
-		.forEach(input => {
-			input.addEventListener("click", async event => {
-				const element = event.target as HTMLInputElement;
-				if (element.value === "unread-counter") {
-					await storage.set(constants.Storage.ShowBadge, element.checked);
-				} else {
-					const services: GoogleService[] = await storage.get(constants.Storage.Services);
-					const changedServices = services
-						.map(service => {
-							if (service.id === element.value) {
-								service.enabled = element.checked;
-							}
-							return service;
-						})
-						.sort((x, y) => (x.enabled === y.enabled ? 0 : x.enabled ? -1 : 1));
+const addServiceCheckboxesEventListeners = async () => {
+	document.querySelectorAll<HTMLInputElement>(`input[type="checkbox"]`).forEach(input => {
+		input.addEventListener("click", async event => {
+			const element = event.target as HTMLInputElement;
+			if (element.value === "unread-counter") {
+				await storageService.setShowBadge(element.checked);
+			} else {
+				const services = await storageService.getServices();
+				const changedServices = services
+					.map(service => {
+						if (service.id === element.value) {
+							service.enabled = element.checked;
+						}
+						return service;
+					})
+					.sort((x, y) => (x.enabled === y.enabled ? 0 : x.enabled ? -1 : 1));
 
-					await storage.set(constants.Storage.Services, changedServices);
-					await renderServicesList();
-				}
-			});
+				await storageService.setServices(changedServices);
+				await renderServicesList();
+			}
 		});
-}
+	});
+};
 
-async function renderStyleList() {
-	const menuStyles: MenuStyle[] = await storage.get(constants.Storage.MenuStyles);
-	menuStyles.forEach(style => {
-		const input: any = createElement("input", {
+const renderStyleList = async () => {
+	const styles = document.querySelector("#style-list");
+	if (!styles) {
+		return;
+	}
+	styles.innerHTML = "";
+
+	(await storageService.getMenuStyles()).forEach(async style => {
+		const input = createElement("input", {
 			type: "radio",
 			name: "style",
 			value: style.name,
 			id: style.name,
 			...(style.enabled && { checked: true }),
-			onclick: async (event: { target: HTMLInputElement; }) => {
-				const storageStyles: MenuStyle[] = await storage.get(constants.Storage.MenuStyles);
-				const changedStyles = storageStyles.map((style: MenuStyle) => {
+			onclick: async (event: { target: HTMLInputElement }) => {
+				const changedStyles = (await storageService.getMenuStyles()).map(style => {
 					style.enabled = style.name === (event.target as HTMLInputElement).value;
 					return style;
 				});
-				await storage.set(constants.Storage.MenuStyles, changedStyles);
-			}
-		});
-		const label: any = createElement("label", { for: style.name }, ` ${style.name}`);
-		const p: any = createElement("p", {}, [input, label]);
+				await storageService.setMenuStyles(changedStyles);
+			},
+		}) as HTMLInputElement;
+		const label = createElement("label", { for: style.name }, ` ${style.name}`) as HTMLLabelElement;
+		const p = createElement("p", {}, [input, label]) as HTMLParagraphElement;
 
-		const styles = document.querySelector("#style-list");
-		if (styles != null) {
-			styles.appendChild(p);
-		}
+		styles.appendChild(p);
 	});
-}
+};
 
-async function initializeUnreadCountCheckbox() {
+const initializeUnreadCountCheckbox = async () => {
 	const checkbox = document.querySelector<HTMLInputElement>("#show-unread-count-checkbox");
 	if (checkbox != null) {
-		checkbox.checked = await storage.get(constants.Storage.ShowBadge);
+		checkbox.checked = await storageService.getShowBadge();
 	}
-}
+};
 
-async function initializeTabs() {
+const initializeTabs = async () => {
 	const tabLinks = document.querySelectorAll<HTMLElement>(".tab-links");
 	tabLinks.forEach(element => {
 		element.addEventListener("click", event => openTab(event, (event.target as HTMLInputElement).value));
@@ -115,21 +114,19 @@ async function initializeTabs() {
 	if (tabLinks.length > 0) {
 		(tabLinks[0] as HTMLElement).click();
 	}
-}
+};
 
-function openTab(event: Event, tabName: string) {
-	document.querySelectorAll<HTMLElement>(".tab-content")
-		.forEach(element => (element.style.display = "none"));
+const openTab = async (event: Event, tabName: string) => {
+	document.querySelectorAll<HTMLElement>(".tab-content").forEach(element => (element.style.display = "none"));
 
-	document.querySelectorAll<HTMLElement>(".tab-links")
-		.forEach(element => element.classList.remove("active"));
+	document.querySelectorAll<HTMLElement>(".tab-links").forEach(element => element.classList.remove("active"));
 
 	const tab = document.getElementById(tabName);
 	if (tab) {
 		tab.style.display = "block";
 	}
 	(event.currentTarget as HTMLElement).classList.add("active");
-}
+};
 
 document.addEventListener("DOMContentLoaded", async () => {
 	await renderServicesList();
@@ -138,4 +135,49 @@ document.addEventListener("DOMContentLoaded", async () => {
 	await initializeTabs();
 
 	await handleContextMenu();
+
+	const form = document.getElementById("custom-service-form");
+	if (form) {
+		form.addEventListener("submit", async (event: any) => {
+			event.preventDefault();
+
+			const nameEl = document.getElementById("service-name") as HTMLInputElement;
+			const urlEl = document.getElementById("service-url") as HTMLInputElement;
+			const iconEl = document.getElementById("service-icon") as HTMLInputElement;
+
+			const name = nameEl.value.trim();
+			const url = urlEl.value.trim();
+
+			if (!name || !url) {
+				return;
+			}
+
+			let iconDataUrl = "";
+			if (iconEl && iconEl.files && iconEl.files[0]) {
+				const file = iconEl.files[0];
+				iconDataUrl = await new Promise<string>((resolve, reject) => {
+					const reader = new FileReader();
+					reader.onload = () => resolve(reader.result as string);
+					reader.onerror = reject;
+					reader.readAsDataURL(file);
+				});
+			}
+
+			const services = await storageService.getServices();
+
+			const id = crypto.randomUUID();
+
+			services.push(new GoogleService(id, name, url, iconDataUrl, true, true));
+
+			await storageService.setServices(services);
+
+			await renderServicesList();
+
+			event.target.reset();
+
+			if (iconEl) {
+				iconEl.value = "";
+			}
+		});
+	}
 });

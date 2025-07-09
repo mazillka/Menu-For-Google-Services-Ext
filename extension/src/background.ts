@@ -4,20 +4,20 @@ storage.onChange(async (changes: any) => {
 	if (changes.hasOwnProperty(constants.Storage.ShowBadge)) {
 		await refreshBadgeVisibility(changes[constants.Storage.ShowBadge].newValue);
 
-		await HandleAlarm();
+		await handleAlarm(false);
 	}
 });
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 	switch (request.message) {
 		case constants.Message.UpdateUnreadCounter:
-			await HandleAlarm(true)
+			await handleAlarm();
 			break;
 	}
 });
 
 chrome.runtime.onInstalled.addListener(async details => {
-	await HandleAlarm();
+	await handleAlarm(false);
 
 	switch (details.reason) {
 		case "install":
@@ -30,7 +30,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 	}
 });
 
-async function HandleAlarm(forceUpdate: boolean = false) {
+const handleAlarm = async (forceUpdate: boolean = true) => {
 	await storage.get(constants.Storage.ShowBadge).then(async (active: boolean) => {
 		if (forceUpdate && active) {
 			await updateUnreadCounter();
@@ -49,20 +49,14 @@ async function HandleAlarm(forceUpdate: boolean = false) {
 	});
 }
 
-chrome.tabs.onUpdated.addListener(async () => await HandleAlarm(true));
 
-chrome.tabs.onActivated.addListener(async () => await HandleAlarm(true));
-
-chrome.tabs.onRemoved.addListener(async () => await HandleAlarm(true));
-
-chrome.tabs.onHighlighted.addListener(async () => await HandleAlarm(true));
-
-chrome.windows.onFocusChanged.addListener(async () => await HandleAlarm(true));
+[chrome.tabs.onUpdated, chrome.tabs.onActivated, chrome.tabs.onRemoved, chrome.tabs.onHighlighted, chrome.windows.onFocusChanged]
+	.forEach(event => event.addListener(async () => await handleAlarm()));
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
 	switch (alarm.name) {
 		case constants.Alarm.UpdateUnreadCounter:
-			await HandleAlarm(true);
+			await handleAlarm();
 			break;
 	}
 });
