@@ -8,12 +8,13 @@ With this extension, users can easily navigate between Google products from a si
 - Quick access to a wide range of Google services from your browser toolbar
 - Customizable menu to add, remove, or reorder services
 - Lightweight and easy to use
-- Supports Chrome and Opera browsers
+- Supports Chrome, Opera and Edge browsers
 
 ## Installation
 
 - **Chrome:** [Install from Chrome Web Store](https://chrome.google.com/webstore/detail/iaflbhdheobajkkpiahidpjpmgeijhdo)
 - **Opera:** [Install from Opera Add-ons](https://addons.opera.com/ru/extensions/details/google-services)
+- **Edge:** [Install from Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/menu-for-google%E2%84%A2-services/miaoijfohfgeniidndoinmjabjjjejon)
 
 ## License
 
