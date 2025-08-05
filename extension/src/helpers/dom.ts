@@ -1,19 +1,17 @@
-export function createElement<K extends keyof HTMLElementTagNameMap>(
-    element: K,
+const createElement = <T extends HTMLElement>(
+    tagName: keyof HTMLElementTagNameMap,
     attribute: { [key: string]: any } = {},
     inner?: string | Node | (string | Node)[]
-): HTMLElementTagNameMap[K] | false {
-    if (!element) return false;
-
-    const el = document.createElement(element);
+): T => {
+    const element = document.createElement(tagName) as T;
 
     // Set attributes and event listeners
     for (const key in attribute) {
         const value = attribute[key];
         if (typeof value === "function" && key.startsWith("on")) {
-            (el as any)[key] = value;
+            (element as any)[key] = value;
         } else if (value !== undefined && value !== null) {
-            el.setAttribute(key, value);
+            element.setAttribute(key, value);
         }
     }
 
@@ -22,16 +20,30 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
 
     for (const item of content) {
         if (item instanceof Node) {
-            el.appendChild(item);
+            element.appendChild(item);
         } else if (typeof item === "string") {
             // Only set innerHTML for single HTML entity, otherwise use text node
             if (/^&[a-zA-Z0-9#]+;$/.test(item)) {
-                el.innerHTML = item;
+                element.innerHTML = item;
             } else {
-                el.appendChild(document.createTextNode(item));
+                element.appendChild(document.createTextNode(item));
             }
         }
     }
 
-    return el;
+    return element;
 }
+
+const getElement = <T extends HTMLElement = HTMLElement>(selector: string): T => {
+  return document.querySelector<T>(selector) as T;
+}
+
+const getElements = <T extends HTMLElement = HTMLElement>(selector: string): NodeListOf<T> => {
+  return document.querySelectorAll<T>(selector);
+}
+
+export {
+    createElement,
+    getElement,
+    getElements
+};

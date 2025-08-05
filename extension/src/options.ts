@@ -1,10 +1,10 @@
 import "./scss/options.scss";
 import sortable from "sortablejs";
-import { createElement, storageService, handleContextMenu } from "./helpers";
+import { createElement, storageService, handleContextMenu, onContentLoaded, getElement, getElements } from "./helpers";
 import { GoogleService } from "./types";
 
 const renderServicesList = async () => {
-	const ul = document.querySelector("#list") as HTMLElement;
+	const ul = getElement<HTMLElement>("#list");
 	if (!ul) {
 		return;
 	}
@@ -14,15 +14,15 @@ const renderServicesList = async () => {
 	}
 
 	(await storageService.getServices()).forEach(service => {
-		const input = createElement("input", {
+		const input = createElement<HTMLInputElement>("input", {
 			type: "checkbox",
 			value: service.id,
 			id: service.id,
 			...(service.enabled && { checked: true }),
-		}) as HTMLInputElement;
-		const label = createElement("label", { for: service.id }, ` ${service.name}`) as HTMLLabelElement;
-		const p = createElement("p", {}, [input, label]) as HTMLParagraphElement;
-		const li: any = createElement("li", { style: `background-image: url(${service.icon});` }, p) as HTMLLIElement;
+		});
+		const label = createElement<HTMLLabelElement>("label", { for: service.id }, ` ${service.name}`);
+		const p = createElement<HTMLParagraphElement>("p", {}, [input, label]);
+		const li = createElement<HTMLLIElement>("li", { style: `background-image: url(${service.icon});` }, p);
 
 		ul.appendChild(li);
 	});
@@ -46,7 +46,7 @@ const renderServicesList = async () => {
 };
 
 const addServiceCheckboxesEventListeners = async () => {
-	document.querySelectorAll<HTMLInputElement>(`input[type="checkbox"]`).forEach(input => {
+	getElements<HTMLInputElement>(`input[type="checkbox"]`).forEach(input => {
 		input.addEventListener("click", async event => {
 			const element = event.target as HTMLInputElement;
 			if (element.value === "unread-counter") {
@@ -70,14 +70,14 @@ const addServiceCheckboxesEventListeners = async () => {
 };
 
 const renderStyleList = async () => {
-	const styles = document.querySelector("#style-list");
+	const styles = getElement<HTMLElement>("#style-list");
 	if (!styles) {
 		return;
 	}
 	styles.innerHTML = "";
 
 	(await storageService.getMenuStyles()).forEach(async style => {
-		const input = createElement("input", {
+		const input = createElement<HTMLInputElement>("input", {
 			type: "radio",
 			name: "style",
 			value: style.name,
@@ -90,23 +90,23 @@ const renderStyleList = async () => {
 				});
 				await storageService.setMenuStyles(changedStyles);
 			},
-		}) as HTMLInputElement;
-		const label = createElement("label", { for: style.name }, ` ${style.name}`) as HTMLLabelElement;
-		const p = createElement("p", {}, [input, label]) as HTMLParagraphElement;
+		});
+		const label = createElement<HTMLLabelElement>("label", { for: style.name }, ` ${style.name}`);
+		const p = createElement<HTMLParagraphElement>("p", {}, [input, label]);
 
 		styles.appendChild(p);
 	});
 };
 
 const initializeUnreadCountCheckbox = async () => {
-	const checkbox = document.querySelector<HTMLInputElement>("#show-unread-count-checkbox");
-	if (checkbox != null) {
+	const checkbox = getElement<HTMLInputElement>("#show-unread-count-checkbox");
+	if (checkbox) {
 		checkbox.checked = await storageService.getShowBadge();
 	}
 };
 
 const initializeTabs = async () => {
-	const tabLinks = document.querySelectorAll<HTMLElement>(".tab-links");
+	const tabLinks = getElements<HTMLElement>(".tab-links");
 	tabLinks.forEach(element => {
 		element.addEventListener("click", event => openTab(event, (event.target as HTMLInputElement).value));
 	});
@@ -117,18 +117,18 @@ const initializeTabs = async () => {
 };
 
 const openTab = async (event: Event, tabName: string) => {
-	document.querySelectorAll<HTMLElement>(".tab-content").forEach(element => (element.style.display = "none"));
+	getElements<HTMLElement>(".tab-content").forEach(element => (element.style.display = "none"));
 
-	document.querySelectorAll<HTMLElement>(".tab-links").forEach(element => element.classList.remove("active"));
+	getElements<HTMLElement>(".tab-links").forEach(element => element.classList.remove("active"));
 
-	const tab = document.getElementById(tabName);
+	const tab = getElement<HTMLElement>(`#${tabName}`);
 	if (tab) {
 		tab.style.display = "block";
 	}
 	(event.currentTarget as HTMLElement).classList.add("active");
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
+await onContentLoaded(async () => {
 	await renderServicesList();
 	await renderStyleList();
 	await initializeUnreadCountCheckbox();
@@ -136,17 +136,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	await handleContextMenu();
 
-	const form = document.getElementById("custom-service-form");
+	const form = getElement<HTMLFormElement>("#custom-service-form");
 	if (form) {
 		form.addEventListener("submit", async (event: any) => {
 			event.preventDefault();
 
-			const nameEl = document.getElementById("service-name") as HTMLInputElement;
-			const urlEl = document.getElementById("service-url") as HTMLInputElement;
-			const iconEl = document.getElementById("service-icon") as HTMLInputElement;
+			const nameEl = getElement<HTMLInputElement>("#service-name");
+			const urlEl = getElement<HTMLInputElement>("#service-url");
+			const iconEl = getElement<HTMLInputElement>("#service-icon");
 
-			const name = nameEl.value.trim();
-			const url = urlEl.value.trim();
+			const name = nameEl?.value.trim();
+			const url = urlEl?.value.trim();
 
 			if (!name || !url) {
 				return;
